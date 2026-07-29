@@ -145,7 +145,31 @@ with st.sidebar:
     st.markdown("**Monte-Carlo**")
     col_e, col_f = st.columns(2)
     mc_paths = col_e.number_input("Paths", value=100_000, min_value=1_000, max_value=1_000_000, step=1_000)
-    mc_steps = col_f.number_input("Steps", value=252, min_value=1, max_value=1000, step=1)
+
+    # Only Barrier actually reads the interior of the path (the knock-out
+    # check); Vanilla/Digital/American payoffs only look at paths[:, -1], so
+    # simulating intermediate steps for them just multiplies GBM.simulate's
+    # memory use for zero accuracy gain — the previous fixed default of 252
+    # steps allocated ~800MB per rerun regardless of framework, which is
+    # enough to OOM-kill the process on a memory-constrained deployment
+    # (e.g. Streamlit Community Cloud's free tier).
+    is_path_dependent = framework == "Barrier"
+    mc_steps_input = col_f.number_input(
+        "Steps",
+        value=100,
+        min_value=1,
+        max_value=300,
+        step=1,
+        disabled=not is_path_dependent,
+        help=(
+            "Barrier monitoring frequency — more steps means closer to continuous "
+            "monitoring, at the cost of memory."
+            if is_path_dependent
+            else "Disabled: this payoff only depends on the terminal price, so "
+            "simulating intermediate steps would waste memory for no accuracy gain."
+        ),
+    )
+    mc_steps = mc_steps_input if is_path_dependent else 1
 
 option = build_option(framework, option_type, strike, maturity, barrier, cash)
 market = MarketData(spot=spot, rate=rate, dividend_yield=div_yield)
