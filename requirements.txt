@@ -1,0 +1,5 @@
+# Streamlit Community Cloud installs from this file at the repo root.
+# Installs optpricing itself (editable, from pyproject.toml) plus its
+# `dashboard` extra (streamlit, plotly) — single source of truth shared with
+# `pip install -e ".[dashboard]"` for local dev.
+-e .[dashboard]

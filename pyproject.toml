@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "optpricing"
+version = "0.1.0"
+description = "A library for exploring option pricing methods across payoffs, exercise styles, and stochastic dynamics"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.26",
+    "scipy>=1.11",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+# Kept separate from `dev`: these belong to the dashboard app, not the
+# library, and nothing under optpricing/ imports them.
+dashboard = [
+    "streamlit>=1.38",
+    "plotly>=5.24",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["optpricing"]
