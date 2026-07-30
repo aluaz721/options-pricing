@@ -2,19 +2,7 @@ import pytest
 
 from optpricing.engines import BlackScholesEngine, CrankNicolsonEngine, MonteCarloEngine
 from optpricing.instruments import American, Option
-from optpricing.market import MarketData
 from optpricing.payoffs import CashOrNothingCall, Call, Put, UpAndOutCall
-from optpricing.processes import GBM
-
-
-@pytest.fixture
-def market():
-    return MarketData(spot=100.0, rate=0.05, dividend_yield=0.02)
-
-
-@pytest.fixture
-def process():
-    return GBM(vol=0.2)
 
 
 @pytest.fixture
